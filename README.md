@@ -1,7 +1,7 @@
-## Messenger Backend (Mvp)
+## Messenger Backend (MVP)
 
-Backend - сервим для обмена сообщенями на GOlang
-
+Backend - сервис mvp для обмена сообщенями на Golang
+постепенным усложнением (rest,postgresql,redis,acync service)
 ## Tech Stack
 - Golang
 - net/http
@@ -10,19 +10,7 @@ Backend - сервим для обмена сообщенями на GOlang
 - Docker
 
 ## Project Structure
- cmd
-│   └── api
-│       └── main.go
-├── go.mod
-├── go.sum
-├── internal
-│   ├── config
-│   │   └── config.go
-│   └── handlers
-│       └── handlers.go
-├── Makefile
-├── migrations
-└── README.md
+
 
 
 
@@ -32,7 +20,8 @@ Backend - сервим для обмена сообщенями на GOlang
 
 ## Run Locally
 ## HealthCHeck
-GET /health
+- GET /health
+- response {"status":"ok"}
 
  bash
 export HTTP_PORT=8080
