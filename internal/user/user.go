@@ -1,10 +1,14 @@
-package handlers
+package user
 
 import (
 	"context"
 	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/shegai01/msg/internal/notification"
+	"github.com/shegai01/msg/internal/shared"
+	"github.com/shegai01/msg/internal/user"
 )
 
 type User struct {
@@ -38,7 +42,14 @@ func (h *Handlers) CreateUser() http.HandlerFunc {
 			return
 
 		}
+		events := make(chan shared.UserCreatedEvent, 100)
 
+		userService := &user.Service{
+			Events: events,
+		}
+
+		notification.Start(events)
+		userService.UserCreated()
 		w.WriteHeader(http.StatusCreated)
 	}
 }

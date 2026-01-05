@@ -10,7 +10,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 	"github.com/shegai01/msg/internal/config"
-	"github.com/shegai01/msg/internal/handlers"
+	"github.com/shegai01/msg/internal/user"
 )
 
 func main() {
@@ -49,11 +49,11 @@ func main() {
 		return
 	}
 
-	newHandl := handlers.NewHandlers(db, rdb)
+	newHandl := user.NewHandlers(db, rdb)
 
-	mux.HandleFunc("/health", handlers.Health)
+	mux.HandleFunc("/health", user.Health)
 	mux.HandleFunc("/users", newHandl.CreateUser())
-	mux.HandleFunc("user/list", newHandl.ListUsers(ctx))
+	mux.HandleFunc("/user/list", newHandl.ListUsers(ctx))
 
 	server := &http.Server{
 		Addr:    ":" + cfg.HTTPPort,
