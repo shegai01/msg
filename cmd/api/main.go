@@ -1,18 +1,30 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
 
-	// "github.com/hashicorp/consul/agent/config
+	"github.com/redis/go-redis/v9"
 	"github.com/shegai01/msg/internal/config"
 	"github.com/shegai01/msg/internal/handlers"
 )
 
 func main() {
+
+	ctx := context.Background()
+	rdb := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+	_, err := rdb.Ping(ctx).Result()
+	if err != nil {
+		slog.Info("info", "rdb.Ping(ctx).Result()", err)
+		return
+	}
+
 	cfg := config.Load()
 	mux := http.NewServeMux()
 
@@ -37,9 +49,11 @@ func main() {
 		return
 	}
 
+	newHandl := handlers.NewHandlers(db, rdb)
+
 	mux.HandleFunc("/health", handlers.Health)
-	mux.HandleFunc("/users", handlers.CreateUser(db))
-	mux.HandleFunc("user/list", handlers.ListUsers(db))
+	mux.HandleFunc("/users", newHandl.CreateUser())
+	mux.HandleFunc("user/list", newHandl.ListUsers(ctx))
 
 	server := &http.Server{
 		Addr:    ":" + cfg.HTTPPort,
