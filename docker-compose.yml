@@ -1,0 +1,18 @@
+
+services:
+  redis:
+    image: redis:7
+    ports:
+      - "6479:6379"
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ALEX1234
+      POSTGRES_PASSWORD: pwd1234
+      POSTGRES_DB: msg 
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
