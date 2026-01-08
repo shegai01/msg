@@ -10,6 +10,8 @@ import (
 
 	"github.com/redis/go-redis/v9"
 	"github.com/shegai01/msg/internal/config"
+	"github.com/shegai01/msg/internal/notification"
+	"github.com/shegai01/msg/internal/shared"
 	"github.com/shegai01/msg/internal/user"
 )
 
@@ -49,10 +51,18 @@ func main() {
 		return
 	}
 
+	events := make(chan shared.UserCreatedEvent, 100)
+
+	userService := &user.Service{
+		Events: events,
+	}
+
+	notification.Start(events)
+
 	newHandl := user.NewHandlers(db, rdb)
 
 	mux.HandleFunc("/health", user.Health)
-	mux.HandleFunc("/users", newHandl.CreateUser())
+	mux.HandleFunc("/users", newHandl.CreateUser(userService))
 	mux.HandleFunc("/user/list", newHandl.ListUsers(ctx))
 
 	server := &http.Server{

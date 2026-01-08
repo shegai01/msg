@@ -5,10 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
-
-	"github.com/shegai01/msg/internal/notification"
-	"github.com/shegai01/msg/internal/shared"
-	"github.com/shegai01/msg/internal/user"
+	// "github.com/shegai01/msg/internal/user
 )
 
 type User struct {
@@ -20,7 +17,7 @@ type User struct {
 
 //todo custom error, func contentType for delete to repeate code
 
-func (h *Handlers) CreateUser() http.HandlerFunc {
+func (h *Handlers) CreateUser(userService *Service) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -42,14 +39,8 @@ func (h *Handlers) CreateUser() http.HandlerFunc {
 			return
 
 		}
-		events := make(chan shared.UserCreatedEvent, 100)
 
-		userService := &user.Service{
-			Events: events,
-		}
-
-		notification.Start(events)
-		userService.UserCreated()
+		userService.UserCreated(u.UserName, u.Email)
 		w.WriteHeader(http.StatusCreated)
 	}
 }
